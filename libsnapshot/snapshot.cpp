@@ -161,6 +161,10 @@ static std::string GetSnapshotCowName(const std::string& snapshot_name,
             return snapshot_name;
         }
 
+        case SnapshotManager::SnapshotDriver::DM_SNAPSHOT: {
+            return snapshot_name + "-user-cow";
+        }
+
         default: {
             LOG(ERROR) << "Invalid snapshot driver";
             return "";
@@ -1396,6 +1400,9 @@ bool SnapshotManager::IsSnapshotDevice(const std::string& dm_name, TargetInfo* t
     } else if (type == "user") {
         // Case 2: dm-user device
         is_recognized_snapshot = true;
+    } else if (type == "snapshot" || type == "snapshot-merge") {
+        // Case 3: dm-snapshot or dm-snapshot-merge device
+        is_recognized_snapshot = true;
     }
 
     if (is_recognized_snapshot) {
@@ -1643,7 +1650,7 @@ auto SnapshotManager::CheckTargetMergeState(LockedFile* lock, const std::string&
             return MergeResult(UpdateState::MergeCompleted);
         }
 
-        LOG(ERROR) << "Expected userspace snapshot device: " << name;
+        LOG(ERROR) << "Expected snapshot or snapshot-merge for device: " << name;
         return MergeResult(UpdateState::MergeFailed, MergeFailureCode::UnknownTargetType);
     }
 
@@ -3576,8 +3583,7 @@ Return SnapshotManager::CreateUpdateSnapshots(const DeltaArchiveManifest& manife
 
     const bool using_snapuserd = userspace_snapshots || legacy_compression;
     if (!using_snapuserd) {
-        LOG(ERROR) << "Using legacy Virtual A/B (dm-snapshot)";
-        return Return::Error();
+        LOG(INFO) << "Using legacy Virtual A/B (dm-snapshot)";
     }
     auto disable_ublk_through_manifest = false;
     // Disabling UBLK based snapshots can be requested explicitly through manifest.
@@ -4415,7 +4421,7 @@ bool SnapshotManager::EnsureNoOverflowSnapshot(LockedFile* lock) {
         if (!ReadSnapshotStatus(lock, snapshot, &status)) {
             return false;
         }
-        if (status.using_snapuserd()) {
+        if (device_->IsRecovery() || status.using_snapuserd()) {
             continue;
         }
 
