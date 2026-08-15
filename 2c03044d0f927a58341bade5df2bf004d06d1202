@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "69a4d951_7725b060",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000018
+      },
+      "writtenOn": "2026-08-15T10:36:03Z",
+      "side": 1,
+      "message": "Tested on Motorola Edge 30",
+      "revId": "2c03044d0f927a58341bade5df2bf004d06d1202",
+      "serverId": "58543e18-2196-4633-8043-7787712585ad"
+    }
+  ]
+}
