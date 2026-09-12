@@ -325,31 +325,6 @@ cc_test {
     },
 }
 
-cc_test {
-    name: "vab_legacy_tests",
-    defaults: [
-        "libsnapshot_test_defaults",
-        "libsnapshot_hal_deps",
-    ],
-    cppflags: [
-        "-DLIBSNAPSHOT_TEST_VAB_LEGACY",
-    ],
-    test_suites: [
-        "general-tests",
-    ],
-    compile_multilib: "64",
-    test_options: {
-        // Legacy VAB launched in Android R.
-        min_shipping_api_level: 30,
-        test_runner_options: [
-            {
-                name: "force-no-test-error",
-                value: "false",
-            },
-        ],
-    },
-}
-
 cc_binary {
     name: "snapshotctl",
     defaults: [
